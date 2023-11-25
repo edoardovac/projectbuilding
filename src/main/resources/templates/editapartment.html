@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Edit Apartment</title>
+<link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css"
+	th:href="@{/css/bootstrap.min.css}" />
+</head>
+<body>
+	<h1>Edit apartment</h1>
+	<div class="col-md-4">
+		<h3>
+			Hello USERNAME
+			<!-- insert username when security is implemented -->
+		</h3>
+	</div>
+
+	<div class="col-md-4" style="padding: 20px 0">
+		<form th:action="@{/logout}" method="post">
+			<input type="submit" value="Sign Out" class="btn btn-sm btn-danger" />
+		</form>
+	</div>
+
+	<div>
+		<form th:object="${apartment}" th:action="@{/saveapartment}" action="#"
+			method="post">
+			<input type="hidden" th:field="*{id}" />
+			<label for="ownerName">Owner Name</label> <input type="text" id="ownerName" th:field="*{ownerName}" required/>
+			<div style="clear: both; display: block; height: 10px;"></div>
+			
+			<label for="ownerSurname">Owner Surname</label> <input type="text" id="ownerSurname" th:field="*{ownerSurname}" required/>
+			<div style="clear: both; display: block; height: 10px;"></div>
+			
+			<label for="aptNumber">Apartment Number</label> <input type="text" pattern="[0-9]{0,5}"id="aptNumber" th:field="*{aptNumber}" required/>
+			<div style="clear: both; display: block; height: 10px;"></div>
+
+			<input type="hidden" th:field="*{building}"/>
+			
+			<input type="submit" value="Save" class="btn btn-success"></input>
+			<a th:href="@{/apartments/{buildingId} (buildingId=${apartment.building.id})}" class="btn btn-secondary">Cancel</a>			
+			
+		</form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Buildings</title>
+<link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css"
+	th:href="@{/css/bootstrap.min.css}" />
+</head>
+<body>
+	<h1>Buildings</h1>
+	<div class="col-md-4">
+		<h3>
+			Hello USERNAME
+			<!-- insert username when security is implemented -->
+		</h3>
+	</div>
+
+	<div class="col-md-4" style="padding: 20px 0">
+		<form th:action="@{/logout}" method="post">
+			<input type="submit" value="Sign Out" class="btn btn-sm btn-danger" />
+		</form>
+	</div>
+
+	<table class="table table-striped">
+		<!-- needs columns only for ADMIN and SUPER with link to documents -->
+		<!-- needs link to correct apartment list -->
+		<tr>
+			<th>Address</th>
+			<th>Stairs</th>
+			<th>Apartments</th>
+			<th></th>
+			<th></th>
+			<th></th>
+		</tr>
+		<tr th:each="building : ${buildings}">
+			<td th:text="${building.address}"></td>
+			<td th:text="${building.numberOfStairs}"></td>
+			<td th:text="${building.numberOfApartments}"></td>
+			<!-- need edit -->
+			<td><a th:href="@{/buildingdocuments/{buildingId} (buildingId=${building.id})}"
+				class="btn btn-primary">Documents</a></td>
+			<td><a th:href="@{/apartments/{buildingId} (buildingId=${building.id})}"
+				class="btn btn-primary">Apartments</a></td>
+			<!-- need edit -->
+			<td>
+				<a th:href="@{/editbuilding/{id} (id=${building.id})}"
+				class="btn btn-secondary">Edit</a>
+				<a th:href="@{/deletebuilding/{id} (id=${building.id})}"
+				class="btn btn-danger">Delete</a>
+			</td>
+		</tr>
+	</table>
+	<a href="/addbuilding" class="btn btn-success">Add Building</a>
+	<!-- needs add building (only available to ADMIN) -->
+</body>
+</html>
