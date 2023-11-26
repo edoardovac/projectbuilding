@@ -10,11 +10,8 @@
 <body>
 	<h1>Documents - <span th:text="${building.address}"></span> - Apartment <span th:text="${apartment.aptNumber}"></span></h1>
 
-		<div class="col-md-4">
-		<h3>
-			Hello USERNAME
-			<!-- insert username when security is implemented -->
-		</h3>
+	<div class="col-md-4">
+		<h3>Hello <span sec:authentication="name"></span>!</h3>
 	</div>
 
 	<div class="col-md-4" style="padding: 20px 0">

@@ -10,10 +10,7 @@
 <body>
 	<h1>Add Document -<span th:text="${apartment.building.address}"></span></h1>
 	<div class="col-md-4">
-		<h3>
-			Hello USERNAME
-			<!-- insert username when security is implemented -->
-		</h3>
+		<h3>Hello <span sec:authentication="name"></span>!</h3>
 	</div>
 	<div class="col-md-4" style="padding: 20px 0">
 		<form th:action="@{/logout}" method="post">
@@ -53,6 +50,5 @@
 		<a th:href="@{'/apartmentdocuments/' + ${apartmentId}}" class="btn btn-secondary">Cancel</a>
 	</form>
 	</div>
-	<p th:text="${apartment.id}"></p>
 </body>
 </html>
