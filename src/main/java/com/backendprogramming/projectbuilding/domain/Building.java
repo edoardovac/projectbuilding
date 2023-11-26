@@ -24,7 +24,10 @@ public class Building {
 
 	@OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
 	private List<Document> documents;
-
+	
+	@OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
+	private List<AppUser> appUsers;
+	
 	public Building() {
 	}
 
@@ -34,7 +37,7 @@ public class Building {
 		this.numberOfStairs = numberOfStairs;
 		this.numberOfApartments = numberOfApartments;
 	}
-
+	
 	public Long getId() {
 		return id;
 	}

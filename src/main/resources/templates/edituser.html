@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Edit User</title>
+<link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css"
+	th:href="@{/css/bootstrap.min.css}" />
+</head>
+<body>
+	<h1>Edit user</h1>
+	<div class="col-md-4">
+		<h3>Hello <span sec:authentication="name"></span>!</h3>
+	</div>
+
+	<div class="col-md-4" style="padding: 20px 0">
+		<form th:action="@{/logout}" method="post">
+			<input type="submit" value="Sign Out" class="btn btn-sm btn-danger" />
+		</form>
+	</div>
+
+	<div>
+		<form th:object="${user}" th:action="@{/saveuser}" action="#"
+			method="post">
+			<input type="hidden" th:field="*{id}" /> 
+
+			<label for="username">Username</label>
+			<input type="text" id="username" th:field="*{username}" readonly/>
+			<div style="clear: both; display: block; height: 10px;"></div>
+
+			<label for="building">Building Address</label> 
+			<select id="building" th:field="*{building}" class="form-control">
+				<option th:each="building: ${building}" th:value="${building.id}" th:text="${building.address}"></option>
+			</select>
+
+			<div style="clear: both; display: block; height: 10px;"></div>
+
+			<label for="apartment">Apartment Number</label> 
+			<select id="apartment" th:field="*{apartment}" class="form-control">
+				<option th:each="apartment: ${apartment}" th:value="${apartment.id}" th:text="${apartment.aptNumber}"></option>
+			</select>
+			
+			<div style="clear: both; display: block; height: 10px;"></div>
+
+			<input type="submit" value="Save" class="btn btn-success"></input> <a
+				href="/users" class="btn btn-secondary">Cancel</a>
+		</form>
+	</div>
+</body>
+</html>

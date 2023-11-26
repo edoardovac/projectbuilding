@@ -27,6 +27,9 @@ public class Apartment {
 
 	@OneToMany(mappedBy = "apartment", cascade = CascadeType.ALL)
 	private List<Document> documents;
+	
+	@OneToMany(mappedBy = "apartment", cascade = CascadeType.ALL)
+    private List<AppUser> appUsers;
 
 	public Apartment() {
 	}
@@ -37,7 +40,7 @@ public class Apartment {
 		this.aptNumber = aptNumber;
 		this.building = building;
 	}
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -84,6 +87,14 @@ public class Apartment {
 
 	public void setDocuments(List<Document> documents) {
 		this.documents = documents;
+	}
+
+	public List<AppUser> getAppUsers() {
+		return appUsers;
+	}
+
+	public void setAppUsers(List<AppUser> appUsers) {
+		this.appUsers = appUsers;
 	}
 
 }

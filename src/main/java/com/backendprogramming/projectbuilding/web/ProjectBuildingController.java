@@ -1,9 +1,12 @@
 package com.backendprogramming.projectbuilding.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.backendprogramming.projectbuilding.domain.Apartment;
 import com.backendprogramming.projectbuilding.domain.ApartmentRepository;
+import com.backendprogramming.projectbuilding.domain.AppUser;
+import com.backendprogramming.projectbuilding.domain.AppUserRepository;
 import com.backendprogramming.projectbuilding.domain.Building;
 import com.backendprogramming.projectbuilding.domain.BuildingRepository;
 import com.backendprogramming.projectbuilding.domain.Document;
@@ -26,7 +31,9 @@ public class ProjectBuildingController {
 	private ApartmentRepository arepository;
 	@Autowired
 	private DocumentRepository drepository;
-	
+	@Autowired
+	private AppUserRepository urepository;
+
 	// Login page
 	@RequestMapping(value = "/login")
 	public String login() {
@@ -36,8 +43,22 @@ public class ProjectBuildingController {
 	// show all buildings
 	@RequestMapping(value = "/buildings")
 	public String buildingList(Model model) {
-		model.addAttribute("buildings", brepository.findAll());
-		return "buildinglist";
+		// get current user
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		// if role is USER then shows only buildings belonging to him/her
+		if (authentication.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals("USER"))) {
+			// find building belonging to current active user
+			AppUser appUser = urepository.findByUsername(authentication.getName());
+			Building building = appUser.getBuilding();
+			// create a list so that the template works without additional code
+			List<Building> buildings = new ArrayList<>();
+			buildings.add(building);
+			model.addAttribute("buildings", buildings);
+			return "buildinglist";
+		} else {
+			model.addAttribute("buildings", brepository.findAll());
+			return "buildinglist";
+		}
 	}
 
 	// new building form page
@@ -77,11 +98,26 @@ public class ProjectBuildingController {
 	// show apartments from a specific building
 	@RequestMapping(value = "/apartments/{buildingId}")
 	public String buildingApartments(@PathVariable("buildingId") Long buildingId, Model model) {
-		Building building = brepository.findById(buildingId).get();
-		List<Apartment> apartments = building.getApartments();
-		model.addAttribute("apartments", apartments);
-		model.addAttribute("building", building);
-		return "apartmentlist";
+		// get current user
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		// if role is USER then shows only buildings belonging to him/her
+		if (authentication.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals("USER"))) {
+			// if role is USER then shows only buildings belonging to him/her
+			AppUser appUser = urepository.findByUsername(authentication.getName());
+			Apartment apartment = appUser.getApartment();
+			// create a list so that the template works without additional code
+			List<Apartment> apartments = new ArrayList<>();
+			apartments.add(apartment);
+			model.addAttribute("apartments", apartments);
+			model.addAttribute("building", appUser.getBuilding());
+			return "apartmentlist";
+		} else {
+			Building building = brepository.findById(buildingId).get();
+			List<Apartment> apartments = building.getApartments();
+			model.addAttribute("apartments", apartments);
+			model.addAttribute("building", building);
+			return "apartmentlist";
+		}
 	}
 
 	// new apartment form page
@@ -227,7 +263,39 @@ public class ProjectBuildingController {
 		model.addAttribute("apartment", apartment);
 		return "adddocumentapartment";
 	}
-
+	
+	// show all users with role USER
+	@RequestMapping(value = "/users")
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public String showUsers(Model model) {
+		// model.addAttribute("users", urepository.findByRole("USER"));
+		model.addAttribute("users", urepository.findByRole("USER"));
+		return "userlist";
+	}
+	
+	// edit page for users with role USER
+	@RequestMapping(value= "/edituser/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public String editUser(@PathVariable("id") Long appUserId, Model model) {
+		AppUser appUser = urepository.findById(appUserId).get();
+		model.addAttribute("user", appUser);
+		model.addAttribute("building", brepository.findAll());
+		model.addAttribute("apartment", arepository.findAll());		
+		return "edituser";
+	}
+	
+	// save user with role USER
+	@RequestMapping(value="/saveuser", method = RequestMethod.POST)
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public String saveEditUser(AppUser givenAppUser) {
+		Long appUserId = givenAppUser.getId();
+		AppUser appUser = urepository.findById(appUserId).get();
+		givenAppUser.setPasswordHash(appUser.getPasswordHash());
+		givenAppUser.setRole(appUser.getRole());
+		urepository.save(givenAppUser);
+		return "redirect:/users";	
+	}
+	
 	// for REST either use apartment/{id} and apartments/{buildingId} to
 	// differentiate them
 	// the first gives the apartment info, while the second a list of apartments
