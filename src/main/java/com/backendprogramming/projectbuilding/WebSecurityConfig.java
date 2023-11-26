@@ -27,9 +27,12 @@ public class WebSecurityConfig {
 	public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
 		http.authorizeHttpRequests(
-				authorize -> authorize.requestMatchers(antMatcher("/css/**")).permitAll().anyRequest().authenticated())
-				.headers(headers -> headers.frameOptions(frameOptions -> frameOptions // for h2console
-						.disable()))
+				authorize -> authorize
+								.requestMatchers(antMatcher("/css/**")).permitAll()
+								.requestMatchers(antMatcher("/register")).permitAll()
+								.anyRequest().authenticated())
+								.headers(headers -> headers.frameOptions(frameOptions -> frameOptions // for h2console
+								.disable()))
 				.formLogin(formlogin -> formlogin.loginPage("/login").defaultSuccessUrl("/buildings", true).permitAll())
 				.logout(logout -> logout.permitAll());
 

@@ -2,29 +2,40 @@ package com.backendprogramming.projectbuilding.domain;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "building")
 public class Building {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@Column(nullable = false)
 	private String address;
+	@Column(nullable = false)
 	private int numberOfStairs;
+	@Column(nullable = false)
 	private int numberOfApartments;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
 	private List<Apartment> apartments;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
 	private List<Document> documents;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
 	private List<AppUser> appUsers;
 	

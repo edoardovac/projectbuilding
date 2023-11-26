@@ -1,36 +1,18 @@
 package com.backendprogramming.projectbuilding.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.backendprogramming.projectbuilding.domain.Apartment;
-import com.backendprogramming.projectbuilding.domain.ApartmentRepository;
 import com.backendprogramming.projectbuilding.domain.AppUser;
 import com.backendprogramming.projectbuilding.domain.AppUserRepository;
-import com.backendprogramming.projectbuilding.domain.Building;
-import com.backendprogramming.projectbuilding.domain.BuildingRepository;
-import com.backendprogramming.projectbuilding.domain.Document;
-import com.backendprogramming.projectbuilding.domain.DocumentRepository;
 
 @Controller
 public class ProjectBuildingController {
-	@Autowired
-	private BuildingRepository brepository;
-	@Autowired
-	private ApartmentRepository arepository;
-	@Autowired
-	private DocumentRepository drepository;
 	@Autowired
 	private AppUserRepository urepository;
 
@@ -40,265 +22,24 @@ public class ProjectBuildingController {
 		return "login";
 	}
 
-	// show all buildings
-	@RequestMapping(value = "/buildings")
-	public String buildingList(Model model) {
-		// get current user
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		// if role is USER then shows only buildings belonging to him/her
-		if (authentication.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals("USER"))) {
-			// find building belonging to current active user
-			AppUser appUser = urepository.findByUsername(authentication.getName());
-			Building building = appUser.getBuilding();
-			// create a list so that the template works without additional code
-			List<Building> buildings = new ArrayList<>();
-			buildings.add(building);
-			model.addAttribute("buildings", buildings);
-			return "buildinglist";
-		} else {
-			model.addAttribute("buildings", brepository.findAll());
-			return "buildinglist";
-		}
+	// Signup page form
+	@RequestMapping(value = "/signup", method = RequestMethod.GET)
+	public String signUpForm(Model model) {
+		model.addAttribute("appUser", new AppUser());
+		return "register";
 	}
 
-	// new building form page
-	@RequestMapping(value = "/addbuilding")
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public String addBuilding(Model model) {
-		model.addAttribute("building", new Building());
-		return "addbuilding";
-	}
+	// Save new user
 
-	// edit a building
-	@RequestMapping(value = "/editbuilding/{id}", method = RequestMethod.GET)
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public String editBuilding(@PathVariable("id") Long buildingId, Model model) {
-		// .get() needed to throw an exception
-		Building building = brepository.findById(buildingId).get();
-		model.addAttribute("building", building);
-		return "editbuilding";
+	@RequestMapping(value = "/saveAppUser", method = RequestMethod.POST)
+	public String addAppUser(@RequestParam("password") String password, AppUser appUser) {
+		// encrypt password and set its
+		String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+		appUser.setPasswordHash(hashedPassword);
+		// set role
+		appUser.setRole("USER");
+		urepository.save(appUser);
+		return "redirect:/login";
 	}
-
-	// save building and redirect to building list
-	@RequestMapping(value = "/savebuilding", method = { RequestMethod.POST, RequestMethod.GET })
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public String saveBuilding(Building building) {
-		brepository.save(building);
-		return "redirect:/buildings";
-	}
-
-	// delete a building
-	@RequestMapping(value = "/deletebuilding/{id}", method = RequestMethod.GET)
-	@PreAuthorize("hasAuthority('SUPER')")
-	public String deleteBuilding(@PathVariable("id") Long buildingId, Model model) {
-		brepository.deleteById(buildingId);
-		return "redirect:../buildings";
-	}
-
-	// show apartments from a specific building
-	@RequestMapping(value = "/apartments/{buildingId}")
-	public String buildingApartments(@PathVariable("buildingId") Long buildingId, Model model) {
-		// get current user
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		// if role is USER then shows only buildings belonging to him/her
-		if (authentication.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals("USER"))) {
-			// if role is USER then shows only buildings belonging to him/her
-			AppUser appUser = urepository.findByUsername(authentication.getName());
-			Apartment apartment = appUser.getApartment();
-			// create a list so that the template works without additional code
-			List<Apartment> apartments = new ArrayList<>();
-			apartments.add(apartment);
-			model.addAttribute("apartments", apartments);
-			model.addAttribute("building", appUser.getBuilding());
-			return "apartmentlist";
-		} else {
-			Building building = brepository.findById(buildingId).get();
-			List<Apartment> apartments = building.getApartments();
-			model.addAttribute("apartments", apartments);
-			model.addAttribute("building", building);
-			return "apartmentlist";
-		}
-	}
-
-	// new apartment form page
-	@RequestMapping(value = "/addapartment/{buildingId}")
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public String addApartment(@PathVariable Long buildingId, Model model) {
-		Building building = brepository.findById(buildingId).get();
-
-		model.addAttribute("apartment", new Apartment());
-		model.addAttribute("building", building);
-		return "addapartment";
-	}
-
-	// edit an apartment
-	@RequestMapping(value = "/editapartment/{id}", method = RequestMethod.GET)
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public String editApartment(@PathVariable("id") Long apartmentId, Model model) {
-		// .get() needed to throw an exception
-		Apartment apartment = arepository.findById(apartmentId).get();
-		model.addAttribute("apartment", apartment);
-		return "editapartment";
-	}
-
-	// save new apartment and redirect to building's apartment list
-	@RequestMapping(value = "/saveapartment", method = { RequestMethod.POST, RequestMethod.GET })
-	public String saveApartment(Apartment apartment, @RequestParam Long buildingId) {
-		Building building = brepository.findById(buildingId).get();
-		apartment.setBuilding(building);
-		arepository.save(apartment);
-		return "redirect:/apartments/" + buildingId;
-	}
-
-	// delete an apartment
-	@RequestMapping(value = "/deleteapartment/{id}", method = RequestMethod.GET)
-	@PreAuthorize("hasAuthority('SUPER')")
-	public String deleteApartment(@PathVariable("id") Long apartmentId, Model model) {
-		Apartment apartment = arepository.findById(apartmentId).get();
-		arepository.deleteById(apartmentId);
-		return "redirect:../apartments/" + apartment.getBuilding().getId();
-	}
-
-	// show specific building documents
-	@RequestMapping(value = "/buildingdocuments/{buildingId}")
-	public String buildingDocumentsList(@PathVariable("buildingId") Long buildingId, Model model) {
-		Building building = brepository.findById(buildingId).get();
-		List<Document> documents = building.getDocuments();
-		model.addAttribute("documents", documents);
-		model.addAttribute("buildingId", buildingId);
-		model.addAttribute("building", building);
-		return "buildingdocuments";
-	}
-
-	// show specific apartment documents
-	@RequestMapping(value = "/apartmentdocuments/{apartmentId}")
-	public String apartmentDocumentsList(@PathVariable("apartmentId") Long apartmentId, Model model) {
-		Apartment apartment = arepository.findById(apartmentId).get();
-		Building building = apartment.getBuilding();
-		List<Document> documents = apartment.getDocuments();
-		model.addAttribute("documents", documents);
-		model.addAttribute("apartment", apartment);
-		model.addAttribute("building", building);
-		return "apartmentdocuments";
-	}
-
-	// delete a document
-	@RequestMapping(value = "deletedocument/{id}", method = RequestMethod.GET)
-	@PreAuthorize("hasAuthority('SUPER')")
-	public String deleteDocument(@PathVariable("id") Long documnentId, Model model) {
-		Document document = drepository.findById(documnentId).get();
-		drepository.deleteById(documnentId);
-		// redirects to correct page
-		if (document.getBuilding() != null) {
-			return "redirect:../buildingdocuments/" + document.getBuilding().getId();
-		} else if (document.getApartment() != null) {
-			return "redirect:../apartmentdocuments/" + document.getApartment().getId();
-		} else {
-			return "buildinglist";
-		}
-	}
-
-	// edit a document
-	@RequestMapping(value = "/editdocument/{id}", method = RequestMethod.GET)
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public String editDocument(@PathVariable("id") Long documentId, Model model) {
-		// .get() needed to throw an exception
-		Document document = drepository.findById(documentId).get();
-		model.addAttribute("document", document);
-		if (document.getBuilding() != null) {
-			Long buildingId = document.getBuilding().getId();
-			model.addAttribute("buildingId", buildingId);
-			return "editdocument";
-		} else if (document.getApartment() != null) {
-			Long apartmentId = document.getApartment().getId();
-			model.addAttribute("apartmentId", apartmentId);
-			return "editdocument";
-		} else {
-			return "buildinglist";
-		}
-
-	}
-
-	// save new building document
-	@RequestMapping(value = "/savedocument", method = { RequestMethod.POST, RequestMethod.GET })
-	public String saveDocument(Document document) {
-		if (document.getBuilding() != null) {
-			Long buildingId = document.getBuilding().getId();
-			Building building = brepository.findById(buildingId).get();
-			document.setBuilding(building);
-			drepository.save(document);
-			return "redirect:/buildingdocuments/" + buildingId;
-		} else if (document.getApartment() != null) {
-			Long apartmentId = document.getApartment().getId();
-			Apartment apartment = arepository.findById(apartmentId).get();
-			document.setApartment(apartment);
-			drepository.save(document);
-			return "redirect:/apartmentdocuments/" + apartmentId;
-		} else {
-			return "buildinglist";
-		}
-
-	}
-
-	// new building document form page
-	@RequestMapping(value = "/adddocumentbuilding/{buildingId}")
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public String addDocumentBuilding(@PathVariable Long buildingId, Model model) {
-		Building building = brepository.findById(buildingId).get();
-		Document document = new Document();
-		document.setBuilding(building);
-		model.addAttribute("document", document);
-		model.addAttribute("building", building);
-		return "adddocumentbuilding";
-	}
-
-	// new building document form page
-	@RequestMapping(value = "/adddocumentapartment/{apartmentId}")
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public String addDocumentApartment(@PathVariable Long apartmentId, Model model) {
-		Apartment apartment = arepository.findById(apartmentId).get();
-		Document document = new Document();
-		document.setApartment(apartment);
-		model.addAttribute("document", document);
-		model.addAttribute("apartment", apartment);
-		return "adddocumentapartment";
-	}
-	
-	// show all users with role USER
-	@RequestMapping(value = "/users")
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public String showUsers(Model model) {
-		// model.addAttribute("users", urepository.findByRole("USER"));
-		model.addAttribute("users", urepository.findByRole("USER"));
-		return "userlist";
-	}
-	
-	// edit page for users with role USER
-	@RequestMapping(value= "/edituser/{id}", method = RequestMethod.GET)
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public String editUser(@PathVariable("id") Long appUserId, Model model) {
-		AppUser appUser = urepository.findById(appUserId).get();
-		model.addAttribute("user", appUser);
-		model.addAttribute("building", brepository.findAll());
-		model.addAttribute("apartment", arepository.findAll());		
-		return "edituser";
-	}
-	
-	// save user with role USER
-	@RequestMapping(value="/saveuser", method = RequestMethod.POST)
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public String saveEditUser(AppUser givenAppUser) {
-		Long appUserId = givenAppUser.getId();
-		AppUser appUser = urepository.findById(appUserId).get();
-		givenAppUser.setPasswordHash(appUser.getPasswordHash());
-		givenAppUser.setRole(appUser.getRole());
-		urepository.save(givenAppUser);
-		return "redirect:/users";	
-	}
-	
-	// for REST either use apartment/{id} and apartments/{buildingId} to
-	// differentiate them
-	// the first gives the apartment info, while the second a list of apartments
-	// that belong to a single building
 
 }

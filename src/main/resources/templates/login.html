@@ -9,6 +9,7 @@
 	th:href="@{css/bootstrap.min.css}" />
 </head>
 <body>
+	<h1>Welcome to ProjectBuilding</h1>
 	<div class="col-md-4 col-md-offset-4">
 		<div class="alert alert-danger" th:if="${param.error}">Invalid
 			username and password.</div>
@@ -29,7 +30,11 @@
 				<input type="submit" value="Sign In" class="btn btn-primary" />
 			</div>
 		</form>
-
+		<div style="clear: both; display: block; height: 10px;"></div>
+		<div style="clear: both; display: block; height: 10px;"></div>
+			<h6>Not registered?</h6> 
+			<a href="/signup" class="btn btn-primary">Sign Up</a>
+		</div>
 	</div>
 </body>
 </html>
