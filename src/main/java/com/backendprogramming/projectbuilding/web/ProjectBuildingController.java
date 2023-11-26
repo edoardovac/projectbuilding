@@ -3,6 +3,7 @@ package com.backendprogramming.projectbuilding.web;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,7 @@ public class ProjectBuildingController {
 
 	// new building form page
 	@RequestMapping(value = "/addbuilding")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String addBuilding(Model model) {
 		model.addAttribute("building", new Building());
 		return "addbuilding";
@@ -48,6 +50,7 @@ public class ProjectBuildingController {
 
 	// edit a building
 	@RequestMapping(value = "/editbuilding/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String editBuilding(@PathVariable("id") Long buildingId, Model model) {
 		// .get() needed to throw an exception
 		Building building = brepository.findById(buildingId).get();
@@ -57,6 +60,7 @@ public class ProjectBuildingController {
 
 	// save building and redirect to building list
 	@RequestMapping(value = "/savebuilding", method = { RequestMethod.POST, RequestMethod.GET })
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String saveBuilding(Building building) {
 		brepository.save(building);
 		return "redirect:/buildings";
@@ -64,6 +68,7 @@ public class ProjectBuildingController {
 
 	// delete a building
 	@RequestMapping(value = "/deletebuilding/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasAuthority('SUPER')")
 	public String deleteBuilding(@PathVariable("id") Long buildingId, Model model) {
 		brepository.deleteById(buildingId);
 		return "redirect:../buildings";
@@ -81,6 +86,7 @@ public class ProjectBuildingController {
 
 	// new apartment form page
 	@RequestMapping(value = "/addapartment/{buildingId}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String addApartment(@PathVariable Long buildingId, Model model) {
 		Building building = brepository.findById(buildingId).get();
 
@@ -91,6 +97,7 @@ public class ProjectBuildingController {
 
 	// edit an apartment
 	@RequestMapping(value = "/editapartment/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String editApartment(@PathVariable("id") Long apartmentId, Model model) {
 		// .get() needed to throw an exception
 		Apartment apartment = arepository.findById(apartmentId).get();
@@ -109,6 +116,7 @@ public class ProjectBuildingController {
 
 	// delete an apartment
 	@RequestMapping(value = "/deleteapartment/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasAuthority('SUPER')")
 	public String deleteApartment(@PathVariable("id") Long apartmentId, Model model) {
 		Apartment apartment = arepository.findById(apartmentId).get();
 		arepository.deleteById(apartmentId);
@@ -140,6 +148,7 @@ public class ProjectBuildingController {
 
 	// delete a document
 	@RequestMapping(value = "deletedocument/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasAuthority('SUPER')")
 	public String deleteDocument(@PathVariable("id") Long documnentId, Model model) {
 		Document document = drepository.findById(documnentId).get();
 		drepository.deleteById(documnentId);
@@ -155,6 +164,7 @@ public class ProjectBuildingController {
 
 	// edit a document
 	@RequestMapping(value = "/editdocument/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String editDocument(@PathVariable("id") Long documentId, Model model) {
 		// .get() needed to throw an exception
 		Document document = drepository.findById(documentId).get();
@@ -196,6 +206,7 @@ public class ProjectBuildingController {
 
 	// new building document form page
 	@RequestMapping(value = "/adddocumentbuilding/{buildingId}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String addDocumentBuilding(@PathVariable Long buildingId, Model model) {
 		Building building = brepository.findById(buildingId).get();
 		Document document = new Document();
@@ -207,6 +218,7 @@ public class ProjectBuildingController {
 
 	// new building document form page
 	@RequestMapping(value = "/adddocumentapartment/{apartmentId}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String addDocumentApartment(@PathVariable Long apartmentId, Model model) {
 		Apartment apartment = arepository.findById(apartmentId).get();
 		Document document = new Document();

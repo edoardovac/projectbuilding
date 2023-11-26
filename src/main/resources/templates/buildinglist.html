@@ -20,15 +20,13 @@
 	</div>
 
 	<table class="table table-striped">
-		<!-- needs columns only for ADMIN and SUPER with link to documents -->
-		<!-- needs link to correct apartment list -->
 		<tr>
 			<th>Address</th>
 			<th>Stairs</th>
 			<th>Apartments</th>
 			<th></th>
 			<th></th>
-			<th></th>
+			<th sec:authorize="hasAnyAuthority('ADMIN', 'SUPER')"></th>
 		</tr>
 		<tr th:each="building : ${buildings}">
 			<td th:text="${building.address}"></td>
@@ -41,14 +39,15 @@
 				class="btn btn-primary">Apartments</a></td>
 			<!-- need edit -->
 			<td>
-				<a th:href="@{/editbuilding/{id} (id=${building.id})}"
+				<a sec:authorize="hasAuthority('ADMIN')"
+				 th:href="@{/editbuilding/{id} (id=${building.id})}"
 				class="btn btn-secondary">Edit</a>
-				<a th:href="@{/deletebuilding/{id} (id=${building.id})}"
+				<a sec:authorize="hasAuthority('SUPER')"
+				th:href="@{/deletebuilding/{id} (id=${building.id})}"
 				class="btn btn-danger">Delete</a>
 			</td>
 		</tr>
 	</table>
-	<a href="/addbuilding" class="btn btn-success">Add Building</a>
-	<!-- needs add building (only available to ADMIN) -->
+	<a sec:authorize="hasAuthority('ADMIN')" href="/addbuilding" class="btn btn-success">Add Building</a>
 </body>
 </html>

@@ -26,7 +26,7 @@
 			<th>Owner Name</th>
 			<th>Owner Surname</th>
 			<th></th>
-			<th></th>
+			<th sec:authorize="hasAnyAuthority('ADMIN', 'SUPER')"></th>
 		</tr>
 		<tr th:each="apartment : ${apartments}">
 			<td th:text="${apartment.aptNumber}"></td>
@@ -36,10 +36,12 @@
 			<td><a th:href="@{/apartmentdocuments/{apartmentId} (apartmentId=${apartment.id})}"
 				class="btn btn-primary">Documents</a></td>
 			<!-- need edit -->
-			<td><a th:href="@{/editapartment/{id} (id=${apartment.id})}"
+			<td><a sec:authorize="hasAuthority('ADMIN')"
+				th:href="@{/editapartment/{id} (id=${apartment.id})}"
 				class="btn btn-secondary">Edit</a>
 			<!-- need edit -->
-			<a th:href="@{/deleteapartment/{id} (id=${apartment.id})}"
+			<a sec:authorize="hasAuthority('SUPER')"
+				th:href="@{/deleteapartment/{id} (id=${apartment.id})}"
 				class="btn btn-danger">Delete</a></td>
 		</tr>
 	</table>

@@ -28,7 +28,7 @@
 			<th>Description</th>
 			<th>Document Number</th>
 			<th>Document Date</th>
-			<th></th>
+			<th sec:authorize="hasAnyAuthority('ADMIN', 'SUPER')"></th>
 
 		</tr>
 		<tr th:each="document : ${documents}">
@@ -38,14 +38,17 @@
 			<td th:text="${document.documentDate}"></td>
 			<!-- need DELETE and EDIT button -->
 			<td>
-				<a th:href="@{/editdocument/{id} (id=${document.id})}"
+				<a sec:authorize="hasAuthority('ADMIN')" 
+					th:href="@{/editdocument/{id} (id=${document.id})}"
 				class="btn btn-secondary">Edit</a>
-				<a th:href="@{/deletedocument/{id} (id=${document.id})}"
+				<a sec:authorize="hasAuthority('SUPER')"
+					th:href="@{/deletedocument/{id} (id=${document.id})}"
 				class="btn btn-danger">Delete</a>
 			</td>
 		</tr>
 	</table>
-	<a th:href="@{/adddocumentbuilding/{buildingId}(buildingId=${buildingId})}" class="btn btn-success">Add Document</a>
+	<a  sec:authorize="hasAuthority('ADMIN')"
+		th:href="@{/adddocumentbuilding/{buildingId}(buildingId=${buildingId})}" class="btn btn-success">Add Document</a>
 
 	<!-- needs add document (only available to ADMIN) + UPLOAD/DOWNLOAD FUNCTIONALITIES -->
 </body>
