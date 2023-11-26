@@ -1,5 +1,6 @@
 package com.backendprogramming.projectbuilding.domain;
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,7 +17,6 @@ public class Document {
 	private String fileName;
 	private String type;
 	private String description;
-	private String uploadDate;
 	private String documentDate;
 	private String documentNumber;
 		
@@ -31,25 +31,23 @@ public class Document {
     public Document() {
     }
 
-	public Document(String fileName, String type, String description, String uploadDate, String documentDate,
+	public Document(String fileName, String type, String description, String documentDate,
 			String documentNumber, Building building) {
 		super();
 		this.fileName = fileName;
 		this.type = type;
 		this.description = description;
-		this.uploadDate = uploadDate;
 		this.documentDate = documentDate;
 		this.documentNumber = documentNumber;
 		this.building = building;
 	}
 
-	public Document(String fileName, String type, String description, String uploadDate, String documentDate,
+	public Document(String fileName, String type, String description, String documentDate,
 			String documentNumber, Apartment apartment) {
 		super();
 		this.fileName = fileName;
 		this.type = type;
 		this.description = description;
-		this.uploadDate = uploadDate;
 		this.documentDate = documentDate;
 		this.documentNumber = documentNumber;
 		this.apartment = apartment;
@@ -85,14 +83,6 @@ public class Document {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public String getUploadDate() {
-		return uploadDate;
-	}
-
-	public void setUploadDate(String uploadDate) {
-		this.uploadDate = uploadDate;
 	}
 
 	public String getDocumentDate() {

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Buildings</title>
@@ -10,7 +11,7 @@
 	<h1>Buildings</h1>
 	<div class="col-md-4">
 		<h3>
-			Hello USERNAME
+			Hello <span sec:authentication="name">Name</span>
 			<!-- insert username when security is implemented -->
 		</h3>
 	</div>

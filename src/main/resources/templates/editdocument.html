@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Edit Document</title>
+<link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css"
+	th:href="@{/css/bootstrap.min.css}" />
+</head>
+<body>
+	<h1>
+		Edit <span th:text="${document.fileName}"></span></h1>
+	<div class="col-md-4">
+		<h3>
+			Hello USERNAME
+			<!-- insert username when security is implemented -->
+		</h3>
+	</div>
+
+	<div class="col-md-4" style="padding: 20px 0">
+		<form th:action="@{/logout}" method="post">
+			<input type="submit" value="Sign Out" class="btn btn-sm btn-danger" />
+		</form>
+	</div>
+
+	<div>
+		<form th:object="${document}" th:action="@{/savedocument}" action="#"
+			method="post">
+			<input type="hidden" th:field="*{id}" /> <input type="hidden"
+				th:field="*{fileName}" /> <input type="hidden" th:field="*{type}" />
+
+			<label for="documentDescription">Document Description</label>
+			<div class="form-outline w-50 mb-4">
+				<textarea class="form-control" id="documentDescription"
+					th:field="*{description}" required></textarea>
+			</div>
+
+			<label for="documentNumber">Document Number</label> <input
+				type="text" id="documentNumber" th:field="*{documentNumber}"
+				required />
+			<div style="clear: both; display: block; height: 10px;"></div>
+
+			<label for="documentDate">Document Date</label> <input type="text"
+				id="documentDate" th:field="*{documentDate}" required />
+			<div style="clear: both; display: block; height: 10px;"></div>
+			
+			<!-- conditional for making a single template for adding building or apartment documents -->
+			<div th:if="${buildingId} != null" >
+			<input type="hidden" th:field="*{building}" th:value="${buildingId}" />
+			<input type="hidden" th:field="*{apartment}" th:value="-100" />
+			</div>
+
+			<div th:if="${apartmentId} != null" >
+			<input type="hidden" th:field="*{building}" value="-100" />
+			<input type="hidden" th:field="*{apartment}" th:value="${apartmentId}" />
+			</div>
+			
+
+			<input type="submit" value="Save" class="btn btn-success"></input> 
+			<!-- to check from what page the user came -->
+			<a
+				th:if="${buildingId} != null"
+				th:href="@{/buildingdocuments/{buildingId} (buildingId=${buildingId})}"
+				class="btn btn-secondary">Cancel</a> 
+			<a
+				th:if="${apartmentId} != null"
+				th:href="@{/apartmentdocuments/{apartmentId} (apartmentId=${apartmentId})}"
+				class="btn btn-secondary">Cancel</a>
+
+		</form>
+	</div>
+</body>
+</html>

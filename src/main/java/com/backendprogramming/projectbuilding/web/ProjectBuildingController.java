@@ -25,6 +25,12 @@ public class ProjectBuildingController {
 	private ApartmentRepository arepository;
 	@Autowired
 	private DocumentRepository drepository;
+	
+	// Login page
+	@RequestMapping(value = "/login")
+	public String login() {
+		return "login";
+	}
 
 	// show all buildings
 	@RequestMapping(value = "/buildings")
@@ -63,6 +69,16 @@ public class ProjectBuildingController {
 		return "redirect:../buildings";
 	}
 
+	// show apartments from a specific building
+	@RequestMapping(value = "/apartments/{buildingId}")
+	public String buildingApartments(@PathVariable("buildingId") Long buildingId, Model model) {
+		Building building = brepository.findById(buildingId).get();
+		List<Apartment> apartments = building.getApartments();
+		model.addAttribute("apartments", apartments);
+		model.addAttribute("building", building);
+		return "apartmentlist";
+	}
+
 	// new apartment form page
 	@RequestMapping(value = "/addapartment/{buildingId}")
 	public String addApartment(@PathVariable Long buildingId, Model model) {
@@ -99,17 +115,6 @@ public class ProjectBuildingController {
 		return "redirect:../apartments/" + apartment.getBuilding().getId();
 	}
 
-	// show apartments from a specific building
-	@RequestMapping(value = "/apartments/{buildingId}")
-	public String buildingApartments(@PathVariable("buildingId") Long buildingId, Model model) {
-		Building building = brepository.findById(buildingId).get();
-		List<Apartment> apartments = building.getApartments();
-		model.addAttribute("apartments", apartments);
-		model.addAttribute("buildingId", buildingId);
-
-		return "apartmentlist";
-	}
-
 	// show specific building documents
 	@RequestMapping(value = "/buildingdocuments/{buildingId}")
 	public String buildingDocumentsList(@PathVariable("buildingId") Long buildingId, Model model) {
@@ -117,9 +122,10 @@ public class ProjectBuildingController {
 		List<Document> documents = building.getDocuments();
 		model.addAttribute("documents", documents);
 		model.addAttribute("buildingId", buildingId);
+		model.addAttribute("building", building);
 		return "buildingdocuments";
 	}
-	
+
 	// show specific apartment documents
 	@RequestMapping(value = "/apartmentdocuments/{apartmentId}")
 	public String apartmentDocumentsList(@PathVariable("apartmentId") Long apartmentId, Model model) {
@@ -127,11 +133,89 @@ public class ProjectBuildingController {
 		Building building = apartment.getBuilding();
 		List<Document> documents = apartment.getDocuments();
 		model.addAttribute("documents", documents);
-		model.addAttribute("apartmentId", apartmentId);
+		model.addAttribute("apartment", apartment);
 		model.addAttribute("building", building);
 		return "apartmentdocuments";
 	}
-	
+
+	// delete a document
+	@RequestMapping(value = "deletedocument/{id}", method = RequestMethod.GET)
+	public String deleteDocument(@PathVariable("id") Long documnentId, Model model) {
+		Document document = drepository.findById(documnentId).get();
+		drepository.deleteById(documnentId);
+		// redirects to correct page
+		if (document.getBuilding() != null) {
+			return "redirect:../buildingdocuments/" + document.getBuilding().getId();
+		} else if (document.getApartment() != null) {
+			return "redirect:../apartmentdocuments/" + document.getApartment().getId();
+		} else {
+			return "buildinglist";
+		}
+	}
+
+	// edit a document
+	@RequestMapping(value = "/editdocument/{id}", method = RequestMethod.GET)
+	public String editDocument(@PathVariable("id") Long documentId, Model model) {
+		// .get() needed to throw an exception
+		Document document = drepository.findById(documentId).get();
+		model.addAttribute("document", document);
+		if (document.getBuilding() != null) {
+			Long buildingId = document.getBuilding().getId();
+			model.addAttribute("buildingId", buildingId);
+			return "editdocument";
+		} else if (document.getApartment() != null) {
+			Long apartmentId = document.getApartment().getId();
+			model.addAttribute("apartmentId", apartmentId);
+			return "editdocument";
+		} else {
+			return "buildinglist";
+		}
+
+	}
+
+	// save new building document
+	@RequestMapping(value = "/savedocument", method = { RequestMethod.POST, RequestMethod.GET })
+	public String saveDocument(Document document) {
+		if (document.getBuilding() != null) {
+			Long buildingId = document.getBuilding().getId();
+			Building building = brepository.findById(buildingId).get();
+			document.setBuilding(building);
+			drepository.save(document);
+			return "redirect:/buildingdocuments/" + buildingId;
+		} else if (document.getApartment() != null) {
+			Long apartmentId = document.getApartment().getId();
+			Apartment apartment = arepository.findById(apartmentId).get();
+			document.setApartment(apartment);
+			drepository.save(document);
+			return "redirect:/apartmentdocuments/" + apartmentId;
+		} else {
+			return "buildinglist";
+		}
+
+	}
+
+	// new building document form page
+	@RequestMapping(value = "/adddocumentbuilding/{buildingId}")
+	public String addDocumentBuilding(@PathVariable Long buildingId, Model model) {
+		Building building = brepository.findById(buildingId).get();
+		Document document = new Document();
+		document.setBuilding(building);
+		model.addAttribute("document", document);
+		model.addAttribute("building", building);
+		return "adddocumentbuilding";
+	}
+
+	// new building document form page
+	@RequestMapping(value = "/adddocumentapartment/{apartmentId}")
+	public String addDocumentApartment(@PathVariable Long apartmentId, Model model) {
+		Apartment apartment = arepository.findById(apartmentId).get();
+		Document document = new Document();
+		document.setApartment(apartment);
+		model.addAttribute("document", document);
+		model.addAttribute("apartment", apartment);
+		return "adddocumentapartment";
+	}
+
 	// for REST either use apartment/{id} and apartments/{buildingId} to
 	// differentiate them
 	// the first gives the apartment info, while the second a list of apartments
