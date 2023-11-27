@@ -26,6 +26,7 @@ public class UserController {
 	@RequestMapping(value = "/users")
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public String showUsers(Model model) {
+		
 		// model.addAttribute("users", urepository.findByRole("USER"));
 		model.addAttribute("users", urepository.findByRole("USER"));
 		return "userlist";

@@ -45,6 +45,6 @@
 				class="btn btn-danger">Delete</a></td>
 		</tr>
 	</table>
-	<a th:href="@{/addapartment/{buildingId}(buildingId=${building.id})}" class="btn btn-success">Add Apartment</a>
+	<a sec:authorize="hasAuthority('ADMIN')" th:href="@{/addapartment/{buildingId}(buildingId=${building.id})}" class="btn btn-success">Add Apartment</a>
 </body>
 </html>

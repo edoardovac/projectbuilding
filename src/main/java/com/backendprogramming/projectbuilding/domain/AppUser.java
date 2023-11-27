@@ -21,8 +21,8 @@ public class AppUser {
 	@Column(name = "username", nullable = false, unique = true)
 	private String username;
 
-	@Column(name = "password_hash", nullable = false)
-	private String password_hash;
+	@Column(name = "password", nullable = false)
+	private String passwordHash;
 
 	@Column(name = "role", nullable = false)
 	private String role;
@@ -41,15 +41,15 @@ public class AppUser {
 	public AppUser(String username, String password_hash, String role) {
 		super();
 		this.username = username;
-		this.password_hash = password_hash;
+		this.passwordHash = password_hash;
 		this.role = role;
 	}
 	
-	public AppUser(String username, String password_hash, String role, Building building,
+	public AppUser(String username, String passwordHash, String role, Building building,
 			Apartment apartment) {
 		super();
 		this.username = username;
-		this.password_hash = password_hash;
+		this.passwordHash = passwordHash;
 		this.role = role;
 		this.building = building;
 		this.apartment = apartment;
@@ -72,11 +72,11 @@ public class AppUser {
 	}
 
 	public String getPasswordHash() {
-		return this.password_hash;
+		return this.passwordHash;
 	}
 
-	public void setPasswordHash(String password_hash) {
-		this.password_hash = password_hash;
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
 	}
 
 	public String getRole() {

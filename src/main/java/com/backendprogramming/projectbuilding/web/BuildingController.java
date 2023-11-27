@@ -34,12 +34,16 @@ public class BuildingController {
 		if (authentication.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals("USER"))) {
 			// find building belonging to current active user
 			AppUser appUser = urepository.findByUsername(authentication.getName());
+			if (appUser.getBuilding() != null) {
 			Building building = appUser.getBuilding();
 			// create a list so that the template works without additional code
 			List<Building> buildings = new ArrayList<>();
 			buildings.add(building);
 			model.addAttribute("buildings", buildings);
 			return "buildinglist";
+			} else {
+				return "contactadmin";
+			}
 		} else {
 			model.addAttribute("buildings", brepository.findAll());
 			return "buildinglist";
