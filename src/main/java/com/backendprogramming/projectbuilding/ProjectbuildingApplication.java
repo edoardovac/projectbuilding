@@ -29,64 +29,97 @@ public class ProjectbuildingApplication {
 	public CommandLineRunner projectBuildingDemo(BuildingRepository brepository, ApartmentRepository arepository,
 			DocumentRepository drepository, AppUserRepository urepository) {
 		return (args) -> {
-			log.info("save a couple of buildings");
-			Building buildingOne = new Building("Made-up Street 123", 5, 10);
+			log.info("save buildings");
+			Building buildingOne = new Building("Ratapihantie 13", 1, 6);
+			Building buildingTwo = new Building("1600 Pennsylvania Avenue", 2, 10);
+			Building buildingThree = new Building("Mannerheimintie 30", 3, 9);
 			brepository.save(buildingOne);
-
-			Building buildingTwo = new Building("Ratapihantie 13", 1, 25);
 			brepository.save(buildingTwo);
+			brepository.save(buildingThree);
 
-			log.info("save a couple of apartments");
-			Apartment apartmentOne = new Apartment("Mario", "Rossi", "101", buildingOne);
-			arepository.save(apartmentOne);
+			log.info("save apartments and their documents and users for buildingOne");
+			String[] namesOne = { "Emily", "Alexander", "Olivia", "Liam", "Sophia" };
+			String[] surnamesOne = { "Smith", "Johnson", "Brown", "Davis", "Miller" };
+			for (int i = 0; i < namesOne.length; i++) {
+				Apartment apartment = new Apartment(namesOne[i], surnamesOne[i], i + 1, buildingOne);
+				arepository.save(apartment);
+				
+				Document document = new Document("ApartmentDoc" + (i * 17), "PDF", "Apartment document description " + (i * 17),
+						"2023-05-01", "AD" + (i * 13), apartment);
+				drepository.save(document);
 
-			Apartment apartmentTwo = new Apartment("John", "Doe", "3A", buildingTwo);
-			arepository.save(apartmentTwo);
+				AppUser appUser = new AppUser(namesOne[i] + surnamesOne[i],
+						"$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6", "USER", buildingOne, apartment);
+				urepository.save(appUser);
+			}
 
-			log.info("save a couple of building documents");
-			Document documentOne = new Document("BuildingDoc1.pdf", "PDF", "Building document description 1",
-					"2023-01-01", "BD001", buildingOne);
+			log.info("save apartments and their documents and users for buildingTwo");
+			String[] namesTwo = { "Aino", "Eero", "Sofia", "Aleksi", "Emma", "Sophia", "Liam", "Olivia", "Alexander",
+					"Emily" };
+			String[] surnamesTwo = { "Virtanen", "Korhonen", "Mäkinen", "Nieminen", "Koskinen", "Smith", "Johnson",
+					"Brown", "Davis", "Miller" };
+			for (int j = 0; j < namesTwo.length; j++) {
+				Apartment apartment = new Apartment(namesTwo[j], surnamesTwo[j], j + 1, buildingTwo);
+				arepository.save(apartment);
+				
+				Document document = new Document("ApartmentDoc" + (j * 14), "PDF", "Apartment document description " + (j * 14),
+						"2023-05-01", "AD" + (j * 27), apartment);
+				drepository.save(document);
+
+				AppUser appUser = new AppUser(surnamesTwo[j] + namesTwo[j],
+						"$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6", "USER", buildingTwo, apartment);
+				urepository.save(appUser);
+			}
+			
+			log.info("save apartments and their documents and users for buildingThree");
+			String[] namesThree = { "Emma", "Aleksi", "Sofia", "Eero", "Aino", "Sophia", "Liam", "Olivia",
+					"Alexander" };
+			String[] surnamesThree = { "Smith", "Johnson", "Brown", "Davis", "Miller", "Virtanen", "Korhonen",
+					"Mäkinen", "Nieminen" };
+			for (int k = 0; k < namesThree.length; k++) {
+				Apartment apartment = new Apartment(namesThree[k], surnamesThree[k], k + 1, buildingThree);
+				arepository.save(apartment);
+				
+				Document document = new Document("ApartmentDoc" + (k * 43), "PDF", "Apartment document description " + (k * 43),
+						"2023-05-01", "AD" + (k * 18), apartment);
+				drepository.save(document);
+
+				AppUser appUser = new AppUser(surnamesThree[k] + namesThree[k],
+						"$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6", "USER", buildingThree,
+						apartment);
+				urepository.save(appUser);
+			}
+
+			log.info("save building documents");		
+			Document documentOne = new Document("BuildingDoc1.pdf", "PDF", "Building document description 1", "2023-01-01",
+					"BD001", buildingOne);
 			drepository.save(documentOne);
-
-			Document documentTwo = new Document("BuildingDoc2.pdf", "PDF", "Building document description 2",
-					"2023-02-01", "BD002", buildingOne);
+			Document documentTwo = new Document("BuildingDoc2.pdf", "PDF", "Building document description 2", "2023-02-01",
+					"BD002", buildingOne);
 			drepository.save(documentTwo);
-
 			Document documentThree = new Document("BuildingDoc3.pdf", "PDF", "Building document description 3",
 					"2023-03-01", "BD003", buildingTwo);
 			drepository.save(documentThree);
-
-			Document documentFour = new Document("BuildingDoc4.pdf", "PDF", "Building document description 4",
-					"2023-04-01", "BD004", buildingTwo);
-			drepository.save(documentFour);
-
-			log.info("save a couple of apartment documents");
-			Document documentFive = new Document("ApartmentDoc1.pdf", "PDF", "Apartment document description 1",
-					"2023-05-01", "AD001", apartmentOne);
+			Document documentFour = new Document("BuildingDoc4.pdf", "PDF", "Building document description 4", "2023-04-01",
+					"BD004", buildingTwo);
+			drepository.save(documentFour);			
+			Document documentFive = new Document("BuildingDoc3.pdf", "PDF", "Building document description 3",
+					"2023-03-01", "BD003", buildingThree);
 			drepository.save(documentFive);
-
-			Document documentSix = new Document("ApartmentDoc2.pdf", "PDF", "Apartment document description 2",
-					"2023-06-01", "AD002", apartmentOne);
+			Document documentSix = new Document("BuildingDoc4.pdf", "PDF", "Building document description 4", "2023-04-01",
+					"BD004", buildingThree);
 			drepository.save(documentSix);
-
-			Document documentSeven = new Document("ApartmentDoc3.pdf", "PDF", "Apartment document description 3",
-					"2023-07-01", "AD003", apartmentTwo);
-			drepository.save(documentSeven);
-
-			Document documentEight = new Document("ApartmentDoc4.pdf", "PDF", "Apartment document description 4",
-					"2023-08-01", "AD004", apartmentTwo);
-			drepository.save(documentEight);
 			
-			// Create users: admin/admin user/user
-			AppUser user1 = new AppUser("user",
-			"$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6", "USER", buildingOne, apartmentOne);
-			AppUser user2 = new AppUser("admin",
-			"$2a$10$0MMwY.IQqpsVc1jC8u7IJ.2rT8b0Cd3b3sfIBGV2zfgnPGtT4r0.C", "ADMIN");
-			AppUser user3 = new AppUser("super", "$2a$12$6YigCulpKaYliLQbgcFSMe69/eMLK/S9faod.gS4/6ZBAuvi3bZFW", "SUPER");
-			urepository.save(user1);
-			urepository.save(user2);
-			urepository.save(user3);
+			log.info("save admin and super users");
+			AppUser userOne = new AppUser("admin", "$2a$10$0MMwY.IQqpsVc1jC8u7IJ.2rT8b0Cd3b3sfIBGV2zfgnPGtT4r0.C",
+					"ADMIN");
+			AppUser userTwo = new AppUser("super", "$2a$12$6YigCulpKaYliLQbgcFSMe69/eMLK/S9faod.gS4/6ZBAuvi3bZFW",
+					"SUPER");
+			urepository.save(userOne);
+			urepository.save(userTwo);
 		};
+
+		
 
 	}
 

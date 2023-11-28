@@ -8,8 +8,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ApartmentRepository extends CrudRepository<Apartment, Long> {
+	
+    List<Apartment> findByOwnerSurname(@Param("ownerSurname") String ownerSurname);
 
-	List<Apartment> findByOwnerSurname(@Param("ownerSurname") String ownerSurname);
+    List<Apartment> findByAptNumber(@Param("aptNumber") int aptNumber);
 
-	List<Apartment> findByAptNumber(@Param("aptNumber") String aptNumber);
 }

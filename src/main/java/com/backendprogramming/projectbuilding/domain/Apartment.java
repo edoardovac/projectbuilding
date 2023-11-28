@@ -25,7 +25,7 @@ public class Apartment {
 	private String ownerName;
 	private String ownerSurname;
 	@Column(nullable = false)
-	private String aptNumber;
+	private int aptNumber;
 
 	@ManyToOne
 	@JoinColumn(name = "building_id")
@@ -42,7 +42,7 @@ public class Apartment {
 	public Apartment() {
 	}
 
-	public Apartment(String ownerName, String ownerSurname, String aptNumber, Building building) {
+	public Apartment(String ownerName, String ownerSurname, int aptNumber, Building building) {
 		this.ownerName = ownerName;
 		this.ownerSurname = ownerSurname;
 		this.aptNumber = aptNumber;
@@ -73,11 +73,11 @@ public class Apartment {
 		this.ownerSurname = ownerSurname;
 	}
 
-	public String getAptNumber() {
+	public int getAptNumber() {
 		return aptNumber;
 	}
 
-	public void setAptNumber(String aptNumber) {
+	public void setAptNumber(int aptNumber) {
 		this.aptNumber = aptNumber;
 	}
 

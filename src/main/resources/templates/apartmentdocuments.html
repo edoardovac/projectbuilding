@@ -48,9 +48,7 @@
 			</td>
 		</tr>
 	</table>
-	<a sec:authorize="hasAuthority('ADMIN')" th:href="@{/adddocumentapartment/{apartmentId}(apartmentId=${apartmentId})}" class="btn btn-success">Add Document</a>
-
-
-	<!-- needs add document (only available to ADMIN) + UPLOAD/DOWNLOAD FUNCTIONALITIES -->
+	<!-- users with role USER and ADMIN can add documents -->	
+	<a sec:authorize="hasAnyAuthority('ADMIN', 'USER')" th:href="@{/adddocumentapartment/{apartmentId}(apartmentId=${apartmentId})}" class="btn btn-success">Add Document</a>
 </body>
 </html>
