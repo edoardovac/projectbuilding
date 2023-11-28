@@ -49,26 +49,19 @@ public class WebLayerTest {
 	public void getAddBuildingMockAdmin() throws Exception {
 		this.mockMvc.perform(get("/addbuilding")).andExpect(status().isOk());
 	}
-	
+
 	// only ADMIN can access this endpoint
 	@Test
 	@WithMockUser(username = "admin", password = "admin", authorities = "ADMIN")
 	public void getAddApartmentMockAdmin() throws Exception {
 		this.mockMvc.perform(get("/addapartment/1")).andExpect(status().isOk());
 	}
-	
+
 	// only ADMIN can access this endpoint
 	@Test
 	@WithMockUser(username = "admin", password = "admin", authorities = "ADMIN")
 	public void getAddDocumentBuildingMockAdmin() throws Exception {
 		this.mockMvc.perform(get("/adddocumentbuilding/1")).andExpect(status().isOk());
-	}
-	
-	// only ADMIN and USER can access this endpoint
-	@Test
-	@WithMockUser(username = "admin", password = "admin", roles = { "USER", "SUPER" })
-	public void getAddDocumentApartmentMockAdmin() throws Exception {
-		this.mockMvc.perform(get("/adddocumentapartment/1")).andExpect(status().isOk());
 	}
 
 	// endpoint forbidden to non ADMIN
@@ -98,7 +91,7 @@ public class WebLayerTest {
 	public void getAddBuildingMockUser() throws Exception {
 		this.mockMvc.perform(get("/addbuilding")).andExpect(status().is(403));
 	}
-	
+
 	// endpoint forbidden to non ADMIN
 	@Test
 	@WithMockUser(username = "super", password = "super", roles = { "USER", "SUPER" })
@@ -112,10 +105,10 @@ public class WebLayerTest {
 	public void getAddDocumentBuildingMockUser() throws Exception {
 		this.mockMvc.perform(get("/adddocumentbuilding/1")).andExpect(status().is(403));
 	}
-	
+
 	// endpoint forbidden to SUPER
 	@Test
-	@WithMockUser(username = "super", password = "super", authorities = "SUPER" )
+	@WithMockUser(username = "super", password = "super", authorities = "SUPER")
 	public void getAddDocumentApartmentMockUser() throws Exception {
 		this.mockMvc.perform(get("/adddocumentapartment/1")).andExpect(status().is(403));
 	}

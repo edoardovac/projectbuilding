@@ -86,7 +86,7 @@ public class DocumentController {
 
 	}
 
-	// save new building document
+	// save new building or apartment document
 	@RequestMapping(value = "/savedocument", method = { RequestMethod.POST, RequestMethod.GET })
 	public String saveDocument(Document document) {
 		if (document.getBuilding() != null) {

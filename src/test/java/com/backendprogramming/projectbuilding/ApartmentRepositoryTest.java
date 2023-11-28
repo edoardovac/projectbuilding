@@ -6,57 +6,59 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.backendprogramming.projectbuilding.domain.Apartment;
 import com.backendprogramming.projectbuilding.domain.ApartmentRepository;
 import com.backendprogramming.projectbuilding.domain.Building;
 import com.backendprogramming.projectbuilding.domain.BuildingRepository;
 
-@DataJpaTest
+@SpringBootTest
 public class ApartmentRepositoryTest {
 	@Autowired
 	private ApartmentRepository arepository;
 	@Autowired
 	private BuildingRepository brepository;
 
+	private Building building = new Building("11 Downing Street", 2, 6);
+	Apartment apartment = new Apartment("Donald", "Duck", 999, building);
+	
 	@Test
 	public void createNewApartmentTest() {
-		Building building = new Building("11 Downing Street", 2, 6);
 		brepository.save(building);
-		Apartment apartment = new Apartment("Donald", "Duck", 999, building);
 		arepository.save(apartment);
 		assertThat(apartment.getId()).isNotNull();
 		assertThat(arepository.findById(apartment.getId())).isNotNull();
+		arepository.delete(apartment);
+		brepository.delete(building);
 	}
 
 	@Test
 	public void findByOwnerSurnameShouldReturnApartment() {
-		Building building = new Building("11 Downing Street", 2, 6);
 		brepository.save(building);
-		Apartment apartment = new Apartment("Donald", "Duck", 999, building);
 		arepository.save(apartment);
 		List<Apartment> apartments = arepository.findByOwnerSurname("Duck");
 		assertThat(apartments).hasSize(1);
 		assertThat(apartments.get(0).getOwnerSurname()).isEqualTo("Duck");
+		arepository.delete(apartment);
+		brepository.delete(building);
 	}
 	
 	@Test
 	public void findByAptNumberShouldReturnApartment() {
-		Building building = new Building("11 Downing Street", 2, 6);
 		brepository.save(building);
-		Apartment apartment = new Apartment("Donald", "Duck", 999, building);
 		arepository.save(apartment);
 		List<Apartment> apartments = arepository.findByAptNumber(999);
 		assertThat(apartments).hasSize(1);
 		assertThat(apartments.get(0).getAptNumber()).isEqualTo(999);
+		arepository.delete(apartment);
+		brepository.delete(building);
 	}
 
 	@Test
 	public void deleteNewApartmentTest() {
-		Building building = new Building("11 Downing Street", 2, 6);
 		brepository.save(building);
-		Apartment apartment = new Apartment("Donald", "Duck", 999, building);
 		arepository.save(apartment);
 		List<Apartment> apartments = arepository.findByOwnerSurname("Duck");
 		assertThat(apartments).hasSize(1);
@@ -64,6 +66,7 @@ public class ApartmentRepositoryTest {
 		arepository.delete(mockApartment);
 		List<Apartment> newApartments = arepository.findByOwnerSurname("Duck");
 		assertThat(newApartments).hasSize(0);
+		brepository.delete(building);
 
 	}
 }

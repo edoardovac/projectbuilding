@@ -29,7 +29,8 @@ public class ProjectbuildingApplication {
 	public CommandLineRunner projectBuildingDemo(BuildingRepository brepository, ApartmentRepository arepository,
 			DocumentRepository drepository, AppUserRepository urepository) {
 		return (args) -> {
-			/*log.info("save buildings");
+			/*
+			log.info("save buildings");
 			Building buildingOne = new Building("Ratapihantie 13", 1, 6);
 			Building buildingTwo = new Building("1600 Pennsylvania Avenue", 2, 10);
 			Building buildingThree = new Building("Mannerheimintie 30", 3, 9);
