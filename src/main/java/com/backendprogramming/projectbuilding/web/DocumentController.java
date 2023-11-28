@@ -25,7 +25,7 @@ public class DocumentController {
 	private ApartmentRepository arepository;
 	@Autowired
 	private DocumentRepository drepository;
-	
+
 	// show specific building documents
 	@RequestMapping(value = "/buildingdocuments/{buildingId}")
 	public String buildingDocumentsList(@PathVariable("buildingId") Long buildingId, Model model) {
@@ -119,9 +119,9 @@ public class DocumentController {
 		return "adddocumentbuilding";
 	}
 
-	// new building document form page
+	// new apartment document form page
 	@RequestMapping(value = "/adddocumentapartment/{apartmentId}")
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	public String addDocumentApartment(@PathVariable Long apartmentId, Model model) {
 		Apartment apartment = arepository.findById(apartmentId).get();
 		Document document = new Document();
