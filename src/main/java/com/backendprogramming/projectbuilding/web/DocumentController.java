@@ -121,7 +121,8 @@ public class DocumentController {
 
 	// new apartment document form page
 	@RequestMapping(value = "/adddocumentapartment/{apartmentId}")
-	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+	//@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
 	public String addDocumentApartment(@PathVariable Long apartmentId, Model model) {
 		Apartment apartment = arepository.findById(apartmentId).get();
 		Document document = new Document();
